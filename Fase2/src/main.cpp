@@ -1,4 +1,5 @@
 // FarmTech Solutions — Fase 2 (ESP32 + Wokwi)
+// Saída formatada em CSV para importação na Fase 3
 // Cultura: Tomate | Regras: Umidade <60 liga / >70 desliga, pH 6.0–6.8.
 
 #include <Arduino.h>
@@ -54,16 +55,21 @@ float readHumidity() {
   return h;
 }
 
+// MODIFICADO: Esta função agora imprime os dados em formato CSV
 void printTelemetry(float ph, float hum, bool defN, bool defP, bool defK) {
-  Serial.print(F("N=")); Serial.print(defN ? F("DEF") : F("OK"));
-  Serial.print(F(" | P=")); Serial.print(defP ? F("DEF") : F("OK"));
-  Serial.print(F(" | K=")); Serial.print(defK ? F("DEF") : F("OK"));
-  Serial.print(F(" | pH=")); Serial.print(ph, 2);
-  Serial.print(F(" | Umid="));
+  // Colunas: N,P,K,pH,Umidade,Bomba
+  Serial.print(defN ? F("DEF") : F("OK"));
+  Serial.print(F(","));
+  Serial.print(defP ? F("DEF") : F("OK"));
+  Serial.print(F(","));
+  Serial.print(defK ? F("DEF") : F("OK"));
+  Serial.print(F(","));
+  Serial.print(ph, 2);
+  Serial.print(F(","));
   if (hum < 0) Serial.print(F("FALHA"));
   else Serial.print(hum, 1);
-  Serial.print(F("%"));
-  Serial.print(F(" | Bomba=")); Serial.println(pumpOn ? F("LIGADA") : F("DESLIGADA"));
+  Serial.print(F(","));
+  Serial.println(pumpOn ? F("LIGADA") : F("DESLIGADA"));
 }
 
 // ===== Rotinas Principais =====
@@ -82,6 +88,10 @@ void setup() {
   dht.begin();
 
   Serial.println(F("== FarmTech Fase 2 | Tomate | ESP32 =="));
+  Serial.println(F("== Gerando log em formato CSV... =="));
+
+  // MODIFICADO: Imprime o cabeçalho (nome das colunas) do CSV
+  Serial.println(F("N,P,K,pH,Umidade,Bomba"));
 }
 
 void loop() {
@@ -108,6 +118,7 @@ void loop() {
     }
   }
 
+  // Imprime os dados da telemetria já em formato CSV
   printTelemetry(ph, hum, defN, defP, defK);
-  delay(1000);
+  delay(1000); // Aguarda 1 segundo entre as leituras
 }
