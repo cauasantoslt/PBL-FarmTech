@@ -43,8 +43,12 @@
         ├── assets
         │   └── README.md
         ├── IrAlem
-        │   ├── 
-        │   └──
+        │   ├── Dashboard em Python
+        │   │   ├── 
+        │   │   └──         
+        │   └── Machine Learning no Agronegócio
+        │       ├── CauãSantos_RM566599_fase3_cap1.ipynb
+        │       └── Link_Youtube.txt
         ├── 
         ├── 
         ├── 
