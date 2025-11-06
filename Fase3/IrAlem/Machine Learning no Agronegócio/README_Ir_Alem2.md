@@ -87,7 +87,8 @@ O Random Forest foi o grande campeão, provando ser uma ferramenta extremamente 
                 │   └── Imagens dos Gráficos Usados.   
                 ├── CauãSantos_RM566599_fase3_cap1.ipynb
                 ├── produtos_agricolas.csv
-                └── Link_Youtube.txt
+                ├── Link_Youtube.txt 
+                └── README_Ir_Alem2.md
 ```
 
 
