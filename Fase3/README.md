@@ -42,14 +42,23 @@
     └── Fase3
         ├── assets
         │   └── README.md
+        │   
         ├── IrAlem
         │   ├── Dashboard em Python
         │   │   ├── 
-        │   │   └──         
+        │   │   ├── 
+        │   │   ├── 
+        │   │   ├──  
+        │   │   └──     
+        │   │
         │   └── Machine Learning no Agronegócio
+        │       ├── assets
         │       ├── CauãSantos_RM566599_fase3_cap1.ipynb
-        │       └── Link_Youtube.txt
-        ├── 
+        │       ├── Link_Youtube.txt
+        │       ├── produtos_agricolas.csv 
+        │       └── README_Ir_Alem2.md
+        │   
+        ├── README.md
         ├── 
         ├── 
         ├── 
