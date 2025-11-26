@@ -25,31 +25,6 @@ Este repositório documenta o **Project-Based Learning (PBL)** do curso de Intel
 
 ---
 
-## 🚀 Navegação do Projeto
-
-Este repositório está organizado em Fases. Cada pasta contém seu próprio `README.md` com os detalhes específicos da entrega.
-
-### ➡️ [Fase 1: Base de Dados Inicial (Python)](./Fase1/)
-* **Objetivo:** Estabelecer a fundação do projeto com a lógica de negócios inicial e os scripts básicos em Python.
-
-### ➡️ [Fase 2: IoT e Automação Inteligente (AICSS)](./Fase2/)
-* **Objetivo:** Simular a coleta de dados de sensores no campo (IoT).
-* **Entrega:** Código C++ (Wokwi/ESP32) que simula sensores de N, P, K, pH e umidade. Este código foi adaptado para gerar o arquivo `Sensores_Fazenda.csv`, que serve como *input* para a Fase 3.
-
-### ➡️ [Fase 3: Banco de Dados e Machine Learning (CDS)](./Fase3/)
-A fase mais completa do projeto, dividida em duas grandes entregas:
-
-* **1. Entrega Obrigatória (Banco de Dados):**
-  * Foco em Engenharia de Dados.
-  * O arquivo `.csv` da Fase 2 foi carregado em um banco de dados relacional **Oracle SQL Developer**, validando o fluxo de dados do sensor até o banco.
-
-* **2. Desafio "Ir Além" (Machine Learning):**
-  * Foco em Ciência de Dados.
-  * Realizamos uma Análise Exploratória completa (EDA) em um novo dataset agrícola.
-  * Desenvolvemos e comparamos 5 modelos preditivos para recomendar a cultura ideal. O modelo **Random Forest** foi o campeão, atingindo **99.32% de acurácia**.
-
----
-
 ## 🛠️ Tecnologias Utilizadas
 
 | Categoria | Tecnologias |
@@ -109,6 +84,22 @@ A fase mais completa do projeto, dividida em duas grandes entregas:
     │   │       ├── produtos_agricolas.csv 
     │   │       └── README_Ir_Alem2.md
     │   │   
+    │   └── README.md
+    │
+    ├── Fase4
+    │   ├── assets
+    │   │   └── logo-fiap.png
+    │   │   
+    │   ├── IrAlem
+    │   │   └── Integração dos Dados como o Banco de Dados 
+    │   │       ├── script.sql
+    │   │       └── sensor_iot.py
+    │   │  
+    │   ├── app.py
+    │   ├── links.txt
+    │   ├── modelo_farmtech.pkl
+    │   ├── regras_negocio.py 
+    │   ├── treinar_modelo.py
     │   └── README.md
     │
     ├── Dashboard em Python

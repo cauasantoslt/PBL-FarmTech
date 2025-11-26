@@ -8,6 +8,7 @@ import math
 import schedule
 import threading
 import time
+import os
 
 st.set_page_config(page_title="Dashboard Irrigação", layout="wide")
 
@@ -20,14 +21,16 @@ CURRENT_STATE = {}  # dicionário usado pelo agendador em background
 # Funções simples
 # -------------------------
 def gerar_dados(horas=48):
-    """Gera dados de exemplo para testar o dashboard."""
+    """Gera dados de exemplo (fallback) caso o CSV não exista."""
     agora = datetime.datetime.now()
     tempos = [agora - datetime.timedelta(hours=i) for i in reversed(range(horas))]
     umidade = np.clip(np.random.normal(35, 8, horas), 5, 95)
     P = np.clip(np.random.normal(20, 5, horas), 1, 100)
     K = np.clip(np.random.normal(30, 7, horas), 1, 120)
     ph = np.clip(np.random.normal(6.5, 0.4, horas), 3.5, 9.0)
-    df = pd.DataFrame({"hora": tempos, "umidade": umidade, "P": P, "K": K, "pH": ph})
+    # Cria N aleatório pois o gerador antigo não tinha
+    N = np.clip(np.random.normal(50, 10, horas), 1, 100) 
+    df = pd.DataFrame({"hora": tempos, "umidade": umidade, "P": P, "K": K, "pH": ph, "N": N})
     return df
 
 def simular_sensor_umidade(base=35):
@@ -85,30 +88,40 @@ CROP_TARGETS = {
 
 def status_cultura(nome, umidade, pH, P, K, targets):
     """Gera uma frase curta com o status da cultura comparando com targets."""
+    # --- CORREÇÃO APLICADA AQUI (Bug do índice resolvido) ---
     t = targets[nome]
     msgs = []
+    
+    # Umidade
     if umidade < t["umidade"][0]:
         msgs.append("umidade baixa")
     elif umidade > t["umidade"][1]:
         msgs.append("umidade alta")
     else:
         msgs.append("umidade OK")
+    
+    # pH
     if pH < t["pH"][0] or pH > t["pH"][1]:
         msgs.append("pH fora do ideal")
     else:
         msgs.append("pH OK")
-    if P < t["P"]["0"]:
+    
+    # Fósforo (P) - CORRIGIDO: uso de inteiros [0] e [1] em vez de string
+    if P < t["P"][0]:
         msgs.append("P baixo")
     elif P > t["P"][1]:
         msgs.append("P alto")
     else:
         msgs.append("P OK")
+    
+    # Potássio (K) - CORRIGIDO: uso de inteiros [0] e [1]
     if K < t["K"][0]:
         msgs.append("K baixo")
     elif K > t["K"][1]:
         msgs.append("K alto")
     else:
         msgs.append("K OK")
+        
     return f"{nome.capitalize()}: " + "; ".join(msgs)
 
 def sugestoes(clima, umidade, ph, P, K):
@@ -156,13 +169,10 @@ def alerta_diario(bot_token, chat_id, cidade, clima, umidade_val, pH_val, P_val,
     enviar_telegram(bot_token, chat_id, texto)
 
 def start_scheduler(bot_token, chat_id, cidade):
-    """Inicia agendador que envia alertas às 09:00 e 19:00.
-       Usa CURRENT_STATE para pegar valores atuais."""
+    """Inicia agendador que envia alertas às 09:00 e 19:00."""
     if not bot_token or not chat_id:
         return False
-    # limpar agendamentos anteriores
     schedule.clear()
-    # agendar 09:00 e 19:00
     schedule.every().day.at("09:00").do(lambda: alerta_diario(
         bot_token, chat_id, cidade,
         CURRENT_STATE.get("clima", {"temp": None, "chuva": None}),
@@ -179,7 +189,6 @@ def start_scheduler(bot_token, chat_id, cidade):
         CURRENT_STATE.get("P", 0),
         CURRENT_STATE.get("K", 0)
     ))
-    # roda em thread daemon para não bloquear o Streamlit
     def run_scheduler():
         while True:
             try:
@@ -195,16 +204,40 @@ def start_scheduler(bot_token, chat_id, cidade):
 # Interface (simples)
 # -------------------------
 st.title("Dashboard de Irrigação e Qualidade do Solo")
-st.write("Versão simples. Escolha cidade, insira chaves se quiser clima real e alertas Telegram.")
+st.write("Versão Final. Lê dados de 'produtos_agricolas_fase4.csv' se disponível.")
 
-# dados de exemplo
-df = gerar_dados(48)
+# --- CORREÇÃO APLICADA AQUI (Carregamento de CSV Real) ---
+try:
+    # Tenta ler o arquivo gerado na Fase 4
+    df = pd.read_csv('produtos_agricolas_fase4.csv')
+    
+    # Renomeia colunas para bater com o padrão do dashboard antigo
+    # O CSV tem 'humidity', 'ph'. O Dash espera 'umidade', 'pH'.
+    df.rename(columns={'humidity': 'umidade', 'ph': 'pH'}, inplace=True)
+    
+    # O CSV pode não ter data/hora, então criamos uma coluna 'hora' simulada
+    # para os gráficos de linha funcionarem
+    agora = datetime.datetime.now()
+    tempos = [agora - datetime.timedelta(hours=i) for i in reversed(range(len(df)))]
+    # Pega apenas as últimas 48 linhas para não pesar o gráfico
+    if len(df) > 48:
+        df = df.iloc[-48:].copy()
+        tempos = tempos[-48:]
+        
+    df['hora'] = tempos
+    st.success("Dados carregados de 'produtos_agricolas_fase4.csv' com sucesso!")
+    
+except FileNotFoundError:
+    # Se não tiver o arquivo, usa o gerador fake (fallback)
+    st.warning("Arquivo 'produtos_agricolas_fase4.csv' não encontrado. Usando dados simulados (fake).")
+    df = gerar_dados(48)
+
+# Pega o último dado para usar nos inputs
 ultimo = df.iloc[-1]
 
 # Sidebar: clima e localização
 st.sidebar.header("Clima e localização")
 api_key = st.sidebar.text_input("OpenWeatherMap API Key (opcional)", type="password")
-# mapa simples de países para facilitar
 country_map = {"Brasil": "BR", "Portugal": "PT", "Espanha": "ES", "México": "MX", "Estados Unidos": "US"}
 country = st.sidebar.selectbox("País", options=list(country_map.keys()))
 city = st.sidebar.text_input("Cidade (ex: Santos)", value="Santos")
@@ -234,30 +267,28 @@ else:
     manual_umidade = None
 conferir_sensor = st.sidebar.checkbox("Conferir com sensor (simulação realista)")
 
-# Sidebar: auto controle para manter culturas saudáveis
+# Sidebar: auto controle
 st.sidebar.header("Controle automático")
 auto_control = st.sidebar.checkbox("Ativar controle automático (ajusta valores simulados)")
 
-# Sidebar: ajustar targets (opcional)
+# Sidebar: ajustar targets
 st.sidebar.header("Ajustar alvos das culturas (opcional)")
-# milho
 st.sidebar.subheader("Milho")
 m_moist_min, m_moist_max = st.sidebar.slider("Umidade milho (%)", 20, 80, (45, 65), step=1)
 m_ph_min, m_ph_max = st.sidebar.slider("pH milho", 4, 9, (6, 7), step=1)
 m_P_min, m_P_max = st.sidebar.slider("P milho", 5, 80, (20, 40), step=1)
 m_K_min, m_K_max = st.sidebar.slider("K milho", 5, 100, (30, 50), step=1)
-# trigo
+
 st.sidebar.subheader("Trigo")
 t_moist_min, t_moist_max = st.sidebar.slider("Umidade trigo (%)", 15, 80, (35, 55), step=1)
 t_ph_min, t_ph_max = st.sidebar.slider("pH trigo", 4, 9, (6, 7), step=1)
 t_P_min, t_P_max = st.sidebar.slider("P trigo", 5, 80, (18, 35), step=1)
 t_K_min, t_K_max = st.sidebar.slider("K trigo", 5, 100, (25, 45), step=1)
 
-# atualiza CROP_TARGETS com valores escolhidos
 CROP_TARGETS["milho"] = {"umidade": (m_moist_min, m_moist_max), "pH": (m_ph_min, m_ph_max), "P": (m_P_min, m_P_max), "K": (m_K_min, m_K_max)}
 CROP_TARGETS["trigo"] = {"umidade": (t_moist_min, t_moist_max), "pH": (t_ph_min, t_ph_max), "P": (t_P_min, t_P_max), "K": (t_K_min, t_K_max)}
 
-# Buscar clima (real ou simulado)
+# Buscar clima
 clima = buscar_clima(api_key.strip() or None, city.strip() or None, country_code)
 
 # Decidir valor final de umidade
@@ -268,7 +299,7 @@ elif conferir_sensor:
 else:
     umidade_val = float(round(ultimo["umidade"],1))
 
-# Se usuário digitou 0, obedecer comando e ligar irrigação
+# Lógica de Irrigação
 if usar_manual_umidade and manual_umidade == 0.0:
     if "irrigation_on" not in st.session_state:
         st.session_state.irrigation_on = True
@@ -276,59 +307,55 @@ if usar_manual_umidade and manual_umidade == 0.0:
         st.session_state.irrigation_on = True
     st.sidebar.warning("Comando recebido: umidade 0 -> irrigação ligada")
 
-# Estado da irrigação (persistente na sessão)
 if "irrigation_on" not in st.session_state:
     st.session_state.irrigation_on = False
 
-# Botão manual ligar/desligar
 if st.button("Ligar/Desligar Irrigação"):
     st.session_state.irrigation_on = not st.session_state.irrigation_on
 
-# Controle automático simples: tenta manter milho e trigo nas faixas
+# Controle automático
 P_val = manual_P if usar_manual_pkph else float(round(ultimo["P"],1))
 K_val = manual_K if usar_manual_pkph else float(round(ultimo["K"],1))
 pH_val = manual_pH if usar_manual_pkph else float(round(ultimo["pH"],2))
 
 if auto_control:
-    # se umidade abaixo do mínimo de qualquer cultura, liga irrigação
     min_needed = min(CROP_TARGETS["milho"]["umidade"][0], CROP_TARGETS["trigo"]["umidade"][0])
     max_allowed = max(CROP_TARGETS["milho"]["umidade"][1], CROP_TARGETS["trigo"]["umidade"][1])
     if umidade_val < min_needed:
         st.session_state.irrigation_on = True
     elif umidade_val > max_allowed:
         st.session_state.irrigation_on = False
-    # simular efeito da irrigação no valor atual (apenas visual)
+    
     if st.session_state.irrigation_on:
         umidade_val = min(100.0, umidade_val + random.uniform(4.0, 10.0))
     else:
         umidade_val = max(0.0, umidade_val - random.uniform(0.5, 2.5))
-    # ajustar P, K, pH lentamente para ficar dentro das faixas (simulação)
-    # se P abaixo do mínimo de ambas culturas, aumentar um pouco (simula adubação automática)
+        
     target_P_min = min(CROP_TARGETS["milho"]["P"][0], CROP_TARGETS["trigo"]["P"][0])
     if P_val < target_P_min:
         P_val = min(200.0, P_val + random.uniform(0.5, 2.5))
     target_K_min = min(CROP_TARGETS["milho"]["K"][0], CROP_TARGETS["trigo"]["K"][0])
     if K_val < target_K_min:
         K_val = min(200.0, K_val + random.uniform(0.5, 2.5))
-    # pH: mover lentamente em direção à faixa média
+        
     avg_ph_target = ( (CROP_TARGETS["milho"]["pH"][0] + CROP_TARGETS["milho"]["pH"][1]) / 2 +
                       (CROP_TARGETS["trigo"]["pH"][0] + CROP_TARGETS["trigo"]["pH"][1]) / 2 ) / 2
     if abs(pH_val - avg_ph_target) > 0.05:
         pH_val = pH_val + (0.05 if avg_ph_target > pH_val else -0.05)
-    # arredonda
+        
     umidade_val = round(float(umidade_val), 1)
     P_val = round(float(P_val), 1)
     K_val = round(float(K_val), 1)
     pH_val = round(float(pH_val), 2)
 
-# Atualiza CURRENT_STATE para o agendador ler
+# Atualiza CURRENT_STATE
 CURRENT_STATE["clima"] = clima
 CURRENT_STATE["umidade"] = umidade_val
 CURRENT_STATE["pH"] = pH_val
 CURRENT_STATE["P"] = P_val
 CURRENT_STATE["K"] = K_val
 
-# Mostrar métricas principais
+# Métricas
 col1, col2, col3 = st.columns(3)
 with col1:
     st.metric("Umidade do solo", f"{umidade_val:.1f} %")
@@ -341,17 +368,18 @@ with col3:
     st.metric("Temp (°C)", f"{clima.get('temp')}")
     st.metric("Prob. chuva (%)", f"{clima.get('chuva')}")
 
-# Mostrar status da irrigação
+# Status da Irrigação
 st.markdown("---")
 st.subheader("Status da Irrigação")
 if st.session_state.irrigation_on:
     st.success("Irrigação: ATIVA")
 else:
     st.info("Irrigação: INATIVA")
-st.write("Última leitura:", ultimo["hora"].strftime("%Y-%m-%d %H:%M"))
+st.write("Última leitura base:", ultimo["hora"].strftime("%Y-%m-%d %H:%M"))
 
-# Atualizar gráfico com valores atuais (substitui último ponto)
+# Gráficos
 df_plot = df.copy()
+# Substitui o último ponto pelos valores atuais da simulação/controle
 df_plot.at[df_plot.index[-1], "umidade"] = umidade_val
 df_plot.at[df_plot.index[-1], "P"] = P_val
 df_plot.at[df_plot.index[-1], "K"] = K_val
@@ -362,7 +390,7 @@ st.subheader("Gráficos")
 st.line_chart(df_plot.set_index("hora")[["umidade", "pH"]])
 st.bar_chart(df_plot.set_index("hora")[["P", "K"]])
 
-# Sugestões e status das culturas
+# Sugestões
 st.markdown("---")
 st.subheader("Sugestões e status das culturas")
 for item in sugestoes(clima, umidade_val, pH_val, P_val, K_val):
@@ -371,10 +399,7 @@ for item in sugestoes(clima, umidade_val, pH_val, P_val, K_val):
 st.write(status_cultura("milho", umidade_val, pH_val, P_val, K_val, CROP_TARGETS))
 st.write(status_cultura("trigo", umidade_val, pH_val, P_val, K_val, CROP_TARGETS))
 
-# -------------------------
-# Agendador de alertas Telegram
-# -------------------------
-# Inicia o agendador automaticamente se token e chat id foram preenchidos e ainda não iniciado
+# Agendador Telegram
 if telegram_token and telegram_chat:
     if "scheduler_started" not in st.session_state or not st.session_state.scheduler_started:
         ok = start_scheduler(telegram_token.strip(), telegram_chat.strip(), city or "local")
@@ -386,7 +411,6 @@ if telegram_token and telegram_chat:
 else:
     st.sidebar.info("Para receber alertas, preencha Telegram Bot Token e Chat ID.")
 
-# Se quiser enviar um alerta manual agora (botão)
 if st.sidebar.button("Enviar alerta Telegram agora"):
     sent = enviar_telegram(telegram_token.strip(), telegram_chat.strip(),
                            f"Alerta manual ({city})\nClima: {clima.get('temp')}°C, chuva {clima.get('chuva')}%\n"
@@ -397,16 +421,8 @@ if st.sidebar.button("Enviar alerta Telegram agora"):
     else:
         st.sidebar.error("Falha ao enviar alerta. Verifique token/chat id.")
 
-# -------------------------
-# Instruções simples
-# -------------------------
+# Instruções
 st.markdown("---")
-st.subheader("Como usar (passo a passo simples)")
-st.write("- Salve este arquivo como **dashboard.py**.")
-st.write("- Instale dependências: `pip install streamlit pandas numpy requests schedule`.")
-st.write("- Rode: `streamlit run dashboard.py`.")
-st.write("- Na barra lateral você pode: escolher cidade, colocar OpenWeatherMap API Key (opcional),")
-st.write("  preencher Telegram Bot Token e Chat ID para receber alertas às 09:00 e 19:00.")
-st.write("- Use **Usar valores manuais** para P K pH ou **Usar umidade manual** para forçar umidade.")
-st.write("- Digite **0** na umidade para comando de emergência: o sistema liga a irrigação automaticamente.")
-st.write("- Ative **Controle automático** para que o dashboard simule ações que mantêm milho e trigo nas faixas saudáveis.")
+st.subheader("Como usar")
+st.write("- O Dashboard tenta ler **produtos_agricolas_fase4.csv**. Se não achar, gera dados aleatórios.")
+st.write("- Configure alertas Telegram na barra lateral.")
