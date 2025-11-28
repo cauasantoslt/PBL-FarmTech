@@ -6,7 +6,7 @@
 
 # PBL - FarmTech Solutions (IA & Agro)
 
-Este repositório documenta o **Project-Based Learning (PBL)** do curso de Inteligência Artificial, simulando o crescimento da startup fictícia **FarmTech Solutions**. O projeto é dividido em 3 Fases, cada uma focada em um pilar diferente da tecnologia aplicada ao agronegócio.
+Este repositório documenta o **Project-Based Learning (PBL)** do curso de Inteligência Artificial, simulando o crescimento da startup fictícia **FarmTech Solutions**. O projeto é dividido em 4 Fases, cada uma focada em um pilar diferente da tecnologia aplicada ao agronegócio.
 
 ---
 
