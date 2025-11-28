@@ -111,6 +111,8 @@ Este repositório documenta o **Project-Based Learning (PBL)** do curso de Intel
 
 ## 🗃 Histórico de lançamentos
 
+* 0.4.0 - 26/11/2025
+    * FASE 4: Machine Learning (Regressão), Dashboard Streamlit e Integração IoT/Oracle.
 * 0.3.0 - 12/11/2024
     * FASE 3: Banco de Dados Estruturado (CDS)
 * 0.2.0 - 15/10/2025
