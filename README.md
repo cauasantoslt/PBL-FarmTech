@@ -126,9 +126,6 @@ Este repositório documenta o **Project-Based Learning (PBL)** do curso de Intel
 * 0.4.0 - 26/11/2025
     * FASE 4: Machine Learning (Regressão), Dashboard Streamlit e Integração IoT/Oracle.
 
-* 0.4.0 - 26/11/2025
-    * FASE 4: Machine Learning (Regressão), Dashboard Streamlit e Integração IoT/Oracle.
-* 0.3.0 - 12/11/2024
 * 0.3.0 - 12/11/2025
     * FASE 3: Banco de Dados Estruturado (CDS)
 
