@@ -115,7 +115,6 @@ Este repositório documenta o **Project-Based Learning (PBL)** do curso de Intel
     │   ├── crop_yield.csv
     │   └── README.md
     │
-    ├── Dashboard em Python
     └── README.md
 ```
 
