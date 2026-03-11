@@ -9,7 +9,7 @@
 # FarmTech Solutions - Fase 5: Machine Learning e Computação em Nuvem
 
 <p align="center">
-<a href="LINK_VIDEO_1_AQUI">🎥 Vídeo 1: Apresentação do Modelo de Machine Learning</a> &nbsp; | &nbsp;
+<a href="https://youtu.be/_kYvgVWzsQA">🎥 Vídeo 1: Apresentação do Modelo de Machine Learning</a> &nbsp; | &nbsp;
 <a href="LINK_VIDEO_2_AQUI">☁️ Vídeo 2: Justificativa e Custos AWS</a> &nbsp; | &nbsp;
 <a href="LINK_IR_ALEM_AQUI">🤖 Vídeo 3: Projeto Ir Além (IoT)</a>
 </p>
@@ -83,7 +83,7 @@ O custo ligeiramente superior no Brasil é compensado pela segurança jurídica 
     │   │       ├── arquitetura_wokwi.png
     │   │       └── README_IrAlem.md
     │   │  
-    │   ├── CauaSantos_rm566599_pbl_fase4.ipynb
+    │   ├── CauaSantos_rm566599_pbl_fase5.ipynb
     │   ├── crop_yield.csv
     │   └── README.md
     │
