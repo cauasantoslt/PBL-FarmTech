@@ -6,7 +6,7 @@
 
 # PBL - FarmTech Solutions (IA & Agro)
 
-
+Este repositório documenta o **Project-Based Learning (PBL)** do curso de Inteligência Artificial, simulando o crescimento da startup fictícia **FarmTech Solutions**. O projeto é dividido em 7 Fases, cada uma focada em um pilar diferente da tecnologia aplicada ao agronegócio.
 
 ---
 
@@ -126,7 +126,10 @@
 * 0.4.0 - 26/11/2025
     * FASE 4: Machine Learning (Regressão), Dashboard Streamlit e Integração IoT/Oracle.
 
+* 0.4.0 - 26/11/2025
+    * FASE 4: Machine Learning (Regressão), Dashboard Streamlit e Integração IoT/Oracle.
 * 0.3.0 - 12/11/2024
+* 0.3.0 - 12/11/2025
     * FASE 3: Banco de Dados Estruturado (CDS)
 
 * 0.2.0 - 15/10/2025
