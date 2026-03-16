@@ -10,7 +10,7 @@
 
 <p align="center">
 <a href="https://youtu.be/_kYvgVWzsQA">🎥 Vídeo 1: Apresentação do Modelo de Machine Learning</a> &nbsp; | &nbsp;
-<a href="LINK_VIDEO_2_AQUI">☁️ Vídeo 2: Justificativa e Custos AWS</a> &nbsp; | &nbsp;
+<a href="https://youtu.be/zvK2uSWqMio">☁️ Vídeo 2: Justificativa e Custos AWS</a> &nbsp; | &nbsp;
 <a href="LINK_IR_ALEM_AQUI">🤖 Vídeo 3: Projeto Ir Além (IoT)</a>
 </p>
 

@@ -38,6 +38,218 @@ Para resolver essa limitação, nossa equipe de engenharia projetou esta estaç�
 
 ---
 
+# 🛠 Tecnologias e Conteúdos Aplicados
+
+A solução foi construída utilizando as seguintes tecnologias:
+
+- **ESP32**
+  Microcontrolador utilizado para simular o dispositivo responsável pela coleta e envio dos dados.
+
+- **Wokwi**
+  Plataforma de simulação utilizada para desenvolver e testar o funcionamento do ESP32.
+
+- **WiFi (WiFi.h)**
+  Biblioteca utilizada para conexão do ESP32 à rede.
+
+- **MQTT (PubSubClient)**
+  Protocolo leve utilizado para envio de dados em aplicações IoT.
+
+- **Ubidots**
+  Plataforma utilizada como **Broker MQTT** e **Dashboard de monitoramento**.
+
+- **JSON**
+  Estrutura utilizada para organizar os dados enviados pelo dispositivo.
+
+- **Serial Monitor**
+  Utilizado para acompanhar a execução da simulação e validar o envio dos dados.
+
+---
+
+# 🏗 Arquitetura do Sistema
+
+O sistema segue o seguinte fluxo de funcionamento:
+
+Sensores simulados
+↓
+ESP32 (Wokwi)
+↓
+Conexão Wi-Fi
+↓
+Broker MQTT (Ubidots)
+↓
+Dashboard de monitoramento
+
+
+## Representação da Arquitetura
+
++------------------------+
+| Sensores Ambientais |
+| - Temperatura |
+| - Umidade |
+| - Luminosidade |
++-----------+------------+
+|
+v
++------------------------+
+| ESP32 (Wokwi) |
+| Coleta e envio |
+| dos dados |
++-----------+------------+
+|
+v
++------------------------+
+| Conexão Wi-Fi |
++-----------+------------+
+|
+v
++------------------------+
+| Broker MQTT (Ubidots) |
+| Recebimento dos dados |
++-----------+------------+
+|
+v
++------------------------+
+| Dashboard |
+| Monitoramento em tempo |
+| real |
++------------------------+
+
+
+---
+
+# 💻 Código do Projeto
+
+O código abaixo realiza:
+
+- conexão do ESP32 à rede Wi-Fi
+- conexão com o broker MQTT
+- geração de dados simulados
+- envio das informações para o Ubidots
+
+```cpp
+#include <WiFi.h>
+#include <PubSubClient.h>
+
+const char* ssid = "Wokwi-GUEST";
+const char* password = "";
+
+const char* mqttServer = "industrial.api.ubidots.com";
+const int mqttPort = 1883;
+const char* mqttUser = "SEU_TOKEN_UBIDOTS"; // tirei o token por questao de segurança
+const char* mqttPassword = "";
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+float temperatura;
+float umidade;
+int luminosidade;
+
+void conectarWiFi() {
+
+  Serial.println("Conectando ao WiFi...");
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("WiFi conectado!");
+
+}
+
+void conectarMQTT() {
+
+  while (!client.connected()) {
+
+    Serial.println("Conectando ao MQTT...");
+
+    if (client.connect("esp32-farmtech", mqttUser, mqttPassword)) {
+      Serial.println("MQTT conectado!");
+    } else {
+      Serial.println("Falha na conexão MQTT");
+      delay(2000);
+    }
+
+  }
+
+}
+
+void setup() {
+
+  Serial.begin(115200);
+
+  conectarWiFi();
+
+  client.setServer(mqttServer, mqttPort);
+
+}
+
+void loop() {
+
+  if (!client.connected()) {
+    conectarMQTT();
+  }
+
+  client.loop();
+
+  temperatura = random(200,350)/10.0;
+  umidade = random(400,900)/10.0;
+  luminosidade = random(0,1000);
+
+  String payload = "{";
+  payload += "\"temperatura\":";
+  payload += temperatura;
+  payload += ",";
+  payload += "\"umidade\":";
+  payload += umidade;
+  payload += ",";
+  payload += "\"luminosidade\":";
+  payload += luminosidade;
+  payload += "}";
+
+  Serial.println(payload);
+
+  client.publish("/v1.6/devices/esp32-farmtech-fb", payload.c_str());
+
+  delay(5000);
+
+}
+
+📦 Exemplo de Payload Enviado
+
+Os dados enviados pelo ESP32 seguem o formato:
+
+{
+  "temperatura": 29.10,
+  "umidade": 67.30,
+  "luminosidade": 287
+}
+
+📊 Dashboard e Simulação
+Dashboard no Ubidots
+
+O dashboard foi configurado com widgets para acompanhar os dados recebidos do dispositivo.
+
+Widgets utilizados:
+
+Gauge de Temperatura
+
+Gauge de Umidade
+
+Gráfico de Luminosidade
+
+Simulação do ESP32 no Wokwi
+
+A simulação foi executada utilizando a plataforma Wokwi.
+
+Serial Monitor da Simulação
+
+Durante a execução da simulação é possível observar o envio dos dados no Serial Monitor.
+
+
 ## 🏗️ Arquitetura do Circuito
 
 Abaixo está o diagrama da nossa arquitetura de hardware, demonstrando a ligação do ESP32 com os sensores.
@@ -62,7 +274,7 @@ O código-fonte desenvolvido em **C++** (disponível no arquivo `main.cpp` nesta
 
 Para reproduzir nosso circuito virtualmente sem precisar do hardware físico:
 
-1. Acesse a plataforma [Wokwi](https://wokwi.com/).
+1. Acesse a plataforma [Wokwi](https://wokwi.com/projects/458570846527299585).
 2. Crie um novo projeto com a placa **ESP32**.
 3. Copie o código do nosso arquivo `main.cpp` e cole no editor principal do simulador.
 4. Adicione os sensores (DHT22 e Potenciômetro simulando a Umidade do Solo) conforme a imagem da nossa arquitetura.
