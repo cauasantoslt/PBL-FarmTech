@@ -50,9 +50,9 @@ Implementamos o **Sistema de Coleta e Comunicação de Dados Usando ESP32 Integr
 Para hospedar o ecossistema da FarmTech Solutions, configuramos uma máquina na Calculadora AWS com as seguintes especificações: **Linux (100% On-Demand), 2 CPUs, 1 GiB de memória RAM, 5 Gigabit de rede e 50 GB de armazenamento (HD)**.
 
 Comparamos os custos entre duas regiões: **São Paulo (sa-east-1)** e **Virgínia do Norte (us-east-1)**.
-
-*(Insira aqui as imagens/gráficos (prints) da calculadora da AWS comparando os dois valores)*
-`![Comparativo AWS](assets/comparativo_aws.png)`
+<p align="center">
+<img src="assets/comparativo_aws.png" alt="calculadora da AWS comparando os dois valores" border="0" width=80%>
+</p>
 
 ### 📌 Justificativa Técnica e Decisão de Região
 Apesar da região da Virgínia do Norte (EUA) apresentar, historicamente, um custo mensal em dólares inferior ao de São Paulo, a nossa decisão arquitetônica para a FarmTech Solutions é **hospedar a infraestrutura na região de São Paulo (BR)**. Os motivos são:
