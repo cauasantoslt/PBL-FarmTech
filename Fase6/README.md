@@ -6,7 +6,7 @@
 
 <br>
 
-# FarmTech Solutions - Fase 5: Machine Learning e Computação em Nuvem
+# FarmTech Solutions - Fase 6: O despertar da Rede Neural
 
 <p align="center">
 <a href="LINK_DO_SEU_VIDEO_DO_PBL_AQUI">🎥 Vídeo 1: Apresentação YOLOv5 e CNN do Zero</a> &nbsp; | &nbsp;
