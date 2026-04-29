@@ -9,8 +9,8 @@
 # FarmTech Solutions - Fase 6: O despertar da Rede Neural
 
 <p align="center">
-<a href="LINK_DO_SEU_VIDEO_DO_PBL_AQUI">🎥 Vídeo 1: Apresentação YOLOv5 e CNN do Zero</a> &nbsp; | &nbsp;
-<a href="LINK_DO_SEU_VIDEO_DO_IR_ALEM_AQUI">🤖 Vídeo 2: Projeto Ir Além (Transfer Learning e Segmentação)</a>
+<a href="https://youtu.be/tvMa5IhIAD0">🎥 Vídeo 1: Apresentação YOLOv5 e CNN do Zero</a> &nbsp; | &nbsp;
+<a href="https://youtu.be/6h9x1ffOAQc">🤖 Vídeo 2: Projeto Ir Além (Transfer Learning e Segmentação)</a>
 </p>
 
 ## Grupo 40
