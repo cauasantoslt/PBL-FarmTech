@@ -10,7 +10,7 @@ Este repositório documenta o **Project-Based Learning (PBL)** do curso de Intel
 
 ---
 
-## 👨‍🎓 Integrantes (Grupo 10)
+## 👨‍🎓 Integrantes
 - <a href="https://www.linkedin.com/in/amanda-damasceno-martins/">566598 - Amanda Damasceno Martins</a>
 - <a href="https://www.linkedin.com/in/cauasantoslt">566599 - Cauã Santos</a>
 - <a href="https://www.linkedin.com/in/fabio-baldo-7959a22a/">567851 - Fabio Baldo</a> 
@@ -114,11 +114,28 @@ Este repositório documenta o **Project-Based Learning (PBL)** do curso de Intel
     │   ├── CauaSantos_rm566599_pbl_fase5.ipynb
     │   ├── crop_yield.csv
     │   └── README.md
+    ├── Fase6
+    │   ├── assets
+    │   │   └── logo-fiap.png
+    │   │   
+    │   ├── IrAlem
+    │   │   └── CauaSantos_rm566599_IrAlem_Fase6.ipynb
+    │   │
+    │   ├── dataset/
+    │   │   ├── images/ (train, val, test)
+    │   │   └── labels/ (train, val, test)
+    │   │
+    │   ├── data.yaml
+    │   ├── CauaSantos_rm566599_pbl_fase6.ipynb
+    │   └── README.md
     │
     └── README.md
 ```
 
 ## 🗃 Histórico de lançamentos
+* 0.6.0 - 28/04/2026
+    * FASE 6: Visão Computacional (YOLOv5, CNN do Zero, Transfer Learning com MobileNetV2 e Segmentação com YOLOv8-Seg).
+
 * 0.5.0 - 10/03/2026
     * FASE 5: Machine Learning (Clusterização e Regressão) e Planejamento de Custos na Nuvem (AWS).
 

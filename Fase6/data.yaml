@@ -1,0 +1,6 @@
+train: /content/drive/MyDrive/pbl_fase6/images/train
+val: /content/drive/MyDrive/pbl_fase6/images/val
+test: /content/drive/MyDrive/pbl_fase6/images/test
+
+nc: 2
+names: ['limpador', 'bone']
